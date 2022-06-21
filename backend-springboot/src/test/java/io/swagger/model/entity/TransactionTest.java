@@ -22,13 +22,6 @@ class TransactionTest {
     }
 
     @Test
-    void setAmountExpectCorrectAmountBack() {
-        Double amount = 11.11;
-        transaction.setAmount(amount);
-        assertEquals(amount, transaction.getAmount());
-    }
-
-    @Test
     void setAmountToPositiveNumberShouldSetThatAmount() {
         Double newAmount = new Random().nextDouble();
         transaction.setAmount(newAmount);

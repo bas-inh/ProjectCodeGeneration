@@ -1,6 +1,5 @@
 package io.swagger.service;
 
-
 class UserServiceTest {
 
 import io.swagger.Swagger2SpringBoot;
@@ -66,5 +65,4 @@ class UserServiceTest {
     void addUserShouldReturnNonNullUserObject() {
         assertNotNull(userService.addUser(user));
     }
-
 }

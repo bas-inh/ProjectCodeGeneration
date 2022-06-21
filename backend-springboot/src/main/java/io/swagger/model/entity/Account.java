@@ -33,6 +33,18 @@ public class Account {
     public void setActive(Boolean active) {
         this.active = Objects.requireNonNullElse(active, true);
     }
+    public void setPincode(Integer pincode) {
+        if(pincode.toString().length() != 4) {
+            throw new IllegalArgumentException("pincode should be of length: 4.");
+        }
+        this.pinCode = pincode;
+    }
+    public void setIban(String iban) {
+        if(iban.length() != 18) {
+            throw new IllegalArgumentException("Iban should be of length: 18.");
+        }
+        this.iban = iban;
+    }
 
     @ToString.Exclude
     @OneToMany(mappedBy = "from")

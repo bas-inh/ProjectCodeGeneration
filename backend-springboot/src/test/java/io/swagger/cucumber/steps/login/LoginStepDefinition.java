@@ -24,7 +24,6 @@ public class LoginStepDefinition extends BaseStepDefinitions implements En {
         When("^I call the login endpoint$", () -> {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Content-Type", "application/json");
-
             HttpEntity<String> request = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
             response = restTemplate.postForEntity(getBaseUrl() + "/login", request, String.class);
         });

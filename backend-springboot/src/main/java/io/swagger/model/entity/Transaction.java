@@ -37,5 +37,10 @@ public class Transaction {
 
     private Integer pinCode;
 
-
+    public void setAmount(Double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
+        this.amount = amount;
+    }
 }

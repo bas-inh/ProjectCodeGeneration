@@ -33,7 +33,7 @@ public class TransactionService {
 
         // Check if one of the accounts is of type savings
         // If at least one account is a savings account continue savings transaction
-        if (!transactionValidatorService.checkCurrentOrSavings(accountService.findAccountByIban(trans.getFrom().getIban()), accountService.findAccountByIban(trans.getTo()))) {
+        if (transactionValidatorService.checkCurrentOrSavings(accountService.findAccountByIban(trans.getFrom().getIban()), accountService.findAccountByIban(trans.getTo()))) {
             // At least one account is a savings account
 
             // Check if user is owner of both accounts

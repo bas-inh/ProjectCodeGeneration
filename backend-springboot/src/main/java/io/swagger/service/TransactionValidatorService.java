@@ -54,7 +54,7 @@ public class TransactionValidatorService {
     }
 
     private boolean isAccountSavings(Account from, Account to) {
-        return from.getAccountType().equals(AccountType.SAVINGS) && to.getAccountType().equals(AccountType.SAVINGS);
+        return from.getAccountType().equals(AccountType.SAVINGS) || to.getAccountType().equals(AccountType.SAVINGS);
     }
 
     private boolean isUserOwnerOfAccount(Account from, Account to) {

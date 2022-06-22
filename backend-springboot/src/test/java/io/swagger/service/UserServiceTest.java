@@ -1,7 +1,5 @@
 package io.swagger.service;
 
-class UserServiceTest {
-
 import io.swagger.Swagger2SpringBoot;
 import io.swagger.model.dto.UserDTO;
 import io.swagger.model.entity.User;
@@ -18,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(classes = {Swagger2SpringBoot.class})
 @AutoConfigureMockMvc

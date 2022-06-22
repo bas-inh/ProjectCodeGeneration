@@ -12,7 +12,8 @@ import java.util.UUID;
 @Repository
 public interface AccountRepo extends JpaRepository<Account, UUID> {
     Account findAccountByUserId(UUID userid);
-//    Optional<Account> save(Account a);
+
+    Account save(Account a);
 
     Optional<Account> findAccountByIban(String iban);
 

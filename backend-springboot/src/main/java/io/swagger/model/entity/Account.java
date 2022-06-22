@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -40,9 +41,6 @@ public class Account {
         this.pinCode = pincode;
     }
     public void setIban(String iban) {
-        if(iban.length() != 18) {
-            throw new IllegalArgumentException("Iban should be of length: 18.");
-        }
         this.iban = iban;
     }
 

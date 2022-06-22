@@ -12,6 +12,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 public class CustomApplicationRunner implements ApplicationRunner {
@@ -45,7 +46,50 @@ public class CustomApplicationRunner implements ApplicationRunner {
         bankAccount.setAccountType(AccountType.CURRENT);
 
 
+        //init wim and his account
+        User wim = new User();
+        wim.setActive(true);
+        wim.setUsername("wimmelstein");
+        wim.setPassword("welkom");
+        wim.setEmail("wim@wim.nl");
+        wim.setPhone("+316 512345678");
+        wim.setDayLimit(0.00);
+        wim.setUserTypes(List.of(UserType.ROLE_CUSTOMER));
+
+        Account wimsAccount = new Account();
+        wimsAccount.setUser(wim);
+        wimsAccount.setAbsLimit(-100.00);
+        wimsAccount.setBalance(300.00);
+        wimsAccount.setIban("NL01INHO0200000001");
+        wimsAccount.setAccountType(AccountType.CURRENT);
+        wimsAccount.setPincode(1234);
+
+        User frank = new User();
+        String frankid = "c18044a9-0b40-42e6-b079-cac2543602a7";
+        frank.setId(UUID.fromString(frankid));
+        frank.setActive(true);
+        frank.setUsername("frankenstein");
+        frank.setPassword("welkom");
+        frank.setEmail("frank@frank.nl");
+        frank.setPhone("+316 112345678");
+        frank.setDayLimit(0.00);
+        frank.setUserTypes(List.of(UserType.ROLE_EMPLOYEE));
+
+        Account franksAccount = new Account();
+        franksAccount.setPincode(1234);
+        franksAccount.setUser(wim);
+        franksAccount.setAbsLimit(-100.00);
+        franksAccount.setBalance(300.00);
+        franksAccount.setIban("NL01INHO0000400001");
+        franksAccount.setAccountType(AccountType.CURRENT);
+
+
+
+        userService.addUser(wim);
+        userService.addUser(frank);
         userService.addUser(bank);
+        accountService.addAccount(franksAccount);
+        accountService.addAccount(wimsAccount);
         accountService.addAccount(bankAccount);
 
     }

@@ -35,8 +35,7 @@ public class AccountService {
             String iban = accountIbanService.generateIban();
             a.setIban(iban);
         }
-        return Optional.of(accountRepo.save(a)).orElseThrow(
-                () -> new IllegalArgumentException("Something went wrong trying to add your account."));
+        return accountRepo.save(a);
     }
 
     //find an accountlist by using the userid/owner id
@@ -71,9 +70,13 @@ public class AccountService {
 
         Pageable pageable = PageRequest.of(skip, limit);
         List<Account> accountList = accountRepo.findAll(pageable).getContent();
-        accountList.removeIf(account -> account.getIban().equals("NL01INHO0000000001"));
+
+//        accountList.removeIf(account -> account.getIban().equals("NL01INHO0000000001"));
 
         return accountList;
+    }
+    public List<Account> getAll() {
+        return accountRepo.findAll();
     }
     //pincode check for integer
     private boolean pinCheck(Integer pin) {

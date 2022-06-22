@@ -21,19 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(classes = {Swagger2SpringBoot.class})
 @AutoConfigureMockMvc
 class UserServiceTest {
-
-//    @Autowired
-//    private UserService userService;
-//
-//    @Autowired
-//    private UserRepo userRepo;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserDTO userDTO;
-
+    
     @Mock
     private User user;
 

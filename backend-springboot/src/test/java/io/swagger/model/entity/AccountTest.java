@@ -26,16 +26,6 @@ class AccountTest {
         Assertions.assertNotNull(account);
 
     }
-
-
-//    @Test
-//    void ibanGreaterThan18DigitsThrowsIllegalArgumentException() {
-//        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-//            account.setIban(accountIbanService.generateIban());
-//        });
-//    }
-
-
     @Test
     void setUserToFrankAndExpectFrankBack() {
         User Frank = new User();
@@ -43,30 +33,20 @@ class AccountTest {
         account.setUser(Frank);
         assertEquals(account.getUser(), Frank);
     }
-
-    @Test
-    void setIbanToSomethingNot18Characters() {
-        assertThrows(IllegalArgumentException.class, () -> account.setIban("123456789 123456789"));
-    }
-
-    @Test
-    void setIbanToNull() {
-        assertThrows(NullPointerException.class, () -> account.setIban(null));
-    }
+//    @Test
+//    void setIbanToSomethingNot18Characters() {
+//        assertThrows(IllegalArgumentException.class, () -> account.setIban("123456789 123456789"));
+//    }
+//    @Test
+//    void setIbanToNull() {
+//        assertThrows(NullPointerException.class, () -> account.setIban(null));
+//    }
     @Test
     void setIbanToValidIbanAndExpectTheSameIbanBack() {
         String iban = "NL01INHO0000000001";
         account.setIban(iban);
         assertEquals(iban, account.getIban());
     }
-
-
-//    @Test
-//    void activeShouldBeAlwaysTrue() {
-//        Assertions.assertEquals(true, account.getActive());
-//    }
-
-
     @Test
     void setPincodeWithCorrectPincode() {
         Integer pincode = 1234;
@@ -85,68 +65,4 @@ class AccountTest {
         Assertions.assertEquals(true, account.getActive());
     }
 
-
-    @Test
-    void getAccountType() {
-    }
-
-    @Test
-    void getBalance() {
-    }
-
-    @Test
-    void getAbsLimit() {
-    }
-
-    @Test
-    void getActive() {
-    }
-
-    @Test
-    void getUser() {
-    }
-
-    @Test
-    void getTransactions() {
-    }
-
-    @Test
-    void setIban() {
-    }
-
-    @Test
-    void setPinCode() {
-    }
-
-    @Test
-    void setAccountType() {
-    }
-
-    @Test
-    void setBalance() {
-    }
-
-    @Test
-    void setAbsLimit() {
-    }
-
-    @Test
-    void setTransactions() {
-    }
-
-    @Test
-    void testEquals() {
-    }
-
-    @Test
-    void canEqual() {
-    }
-
-    @Test
-    void testHashCode() {
-    }
-
-    @Test
-    void testToString() {
-    }
 }

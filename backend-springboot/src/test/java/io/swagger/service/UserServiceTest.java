@@ -1,28 +1,26 @@
 package io.swagger.service;
 
-class UserServiceTest {
+import io.swagger.Swagger2SpringBoot;
+import io.swagger.model.dto.UserDTO;
+import io.swagger.model.entity.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-//import io.swagger.Swagger2SpringBoot;
-//import io.swagger.model.dto.UserDTO;
-//import io.swagger.model.entity.User;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.Mock;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//
-//import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.time.OffsetDateTime;
-//import java.time.ZoneOffset;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//@SpringBootTest(classes = {Swagger2SpringBoot.class})
-//@AutoConfigureMockMvc
-//class UserServiceTest {
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@SpringBootTest(classes = {Swagger2SpringBoot.class})
+@AutoConfigureMockMvc
+class UserServiceTest {
 
 //    @Autowired
 //    private UserService userService;

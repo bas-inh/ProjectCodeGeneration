@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.security.test.context.support.WithMockUser;
+//import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -54,7 +54,7 @@ class UsersApiControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "", password = "")
+//    @WithMockUser(username = "", password = "")
     void addUserShouldReturnANonNullObjectAndStatusCreated() throws Exception {
         when(userService.getAll(SKIP, LIMIT)).thenReturn(List.of());
         this.mockMvc.perform(get("/users?skip=0&limit=1"))

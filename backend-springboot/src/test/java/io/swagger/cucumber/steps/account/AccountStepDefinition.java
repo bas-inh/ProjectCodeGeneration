@@ -1,6 +1,8 @@
 package io.swagger.cucumber.steps.account;
 
 
+//import io.cucumber.java.en.Given;
+//import io.cucumber.java.en.When;
 import io.swagger.cucumber.steps.BaseStepDefinitions;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -8,14 +10,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 
 
-
-public class AccountStepDefinition extends BaseStepDefinitions{
+public class AccountStepDefinition extends BaseStepDefinitions {
 
     private final String baseUrl = "http://localhost:8080/BankAPI/";
     // Token is valid for one and a half year
@@ -32,27 +29,24 @@ public class AccountStepDefinition extends BaseStepDefinitions{
     private static final String INVALID_IBAN = "NOTVALIDIBAN0001";
 
 
-
-
     private ResponseEntity<String> accountByIban;
-    @Given("I want an account and i provide a valid jwt")
-    public void iHaveValidJwtToGetOneAccountWithSpecificIban() {
-        Assertions.assertTrue(VALID_TOKEN_USER.startsWith("ey"));
-    }
 
-    @When("I call endpoint with get request to get one account")
-    public void iCallEndpointWithGetRequestToGetOneAccount() {
-
-        httpHeaders.clear();
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.add("Authorization", VALID_TOKEN_ADMIN);
-        accountByIban = restTemplate.exchange(
-                baseUrl + "getByIban/" + VALID_IBAN , HttpMethod.GET, new HttpEntity<>(httpHeaders),
-                String.class);
-    }
-
-
+//    Given("I want an account and i provide a valid jwt")
+//    public void iHaveValidJwtToGetOneAccountWithSpecificIban() {
+//        Assertions.assertTrue(VALID_TOKEN_USER.startsWith("ey"));
+//    }
+//
+//    When("I call endpoint with get request to get one account")
+//    public void iCallEndpointWithGetRequestToGetOneAccount() {
+//
+//        httpHeaders.clear();
+//        HttpHeaders headers = new HttpHeaders();
+//
+//        headers.add("Authorization", VALID_TOKEN_ADMIN);
+//        accountByIban = restTemplate.exchange(
+//                baseUrl + "getByIban/" + VALID_IBAN, HttpMethod.GET, new HttpEntity<>(httpHeaders),
+//                String.class);
+//    }
 
 
 }

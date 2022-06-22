@@ -8,10 +8,8 @@ import io.swagger.model.enumeration.UserType;
 import io.swagger.repo.AccountRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -19,8 +17,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-
-
 
 
 class AccountServiceTest {
@@ -73,7 +69,7 @@ class AccountServiceTest {
     }
 
     @Test
-    public void addAccount(){
+    void addAccount() {
         accountRepo.save(testAccount);
         when(accountRepo.findAll()).thenReturn(accounts);
         List<Account> accountList1 = accountService.accountRepo.findAll();

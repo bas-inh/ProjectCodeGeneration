@@ -20,30 +20,30 @@ public class LoginStepDefinition extends BaseStepDefinitions implements En {
     private ResponseEntity<String> response;
     private LoginDTO dto;
 
-    public LoginStepDefinition() {
-        When("^I call the login endpoint$", () -> {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("Content-Type", "application/json");
-            HttpEntity<String> request = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
-            response = restTemplate.postForEntity(getBaseUrl() + "/login", request, String.class);
-        });
-
-        Then("^I receive a status of (\\d+)$", (Integer status) -> {
-            Assertions.assertSame(status, response.getStatusCodeValue());
-        });
-
-        And("^I get a valid JWT-token$", () -> {
-            JSONObject jsonObject = new JSONObject(response.getBody());
-            String token = jsonObject.getString("token");
-            Assertions.assertTrue(token.startsWith("ey"));
-        });
-        Given("^I have a valid user object$", () -> {
-            dto = new LoginDTO();
-        });
-        Given("^I have an invalid user object$", () -> {
-            dto = new LoginDTO();
-        });
-    }
-
-
+//    public LoginStepDefinition() {
+//        When("^I call the login endpoint$", () -> {
+//            HttpHeaders httpHeaders = new HttpHeaders();
+//            httpHeaders.add("Content-Type", "application/json");
+//            HttpEntity<String> request = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
+//            response = restTemplate.postForEntity(getBaseUrl() + "/login", request, String.class);
+//        });
+//
+//        Then("^I receive a status of (\\d+)$", (Integer status) -> {
+//            Assertions.assertSame(status, response.getStatusCodeValue());
+//        });
+//
+//        And("^I get a valid JWT-token$", () -> {
+//            JSONObject jsonObject = new JSONObject(response.getBody());
+//            String token = jsonObject.getString("token");
+//            Assertions.assertTrue(token.startsWith("ey"));
+//        });
+//        Given("^I have a valid user object$", () -> {
+//            dto = new LoginDTO();
+//        });
+//        Given("^I have an invalid user object$", () -> {
+//            dto = new LoginDTO();
+//        });
+//    }
+//
+//
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
+import java.io.File;
+
 @Slf4j
 public class UserStepDefinitions extends BaseStepDefinitions implements En {
 
@@ -41,7 +43,7 @@ public class UserStepDefinitions extends BaseStepDefinitions implements En {
             httpHeaders.add("Content-Type", "application/json");
 
             HttpEntity<String> request = new HttpEntity<String>(mapper.writeValueAsString(dto), httpHeaders);
-            response = restTemplate.postForEntity(getBaseUrl() + "/users" + "?skip=" + SKIP + "&limit=" + LIMIT , request, String.class);
+            response = restTemplate.postForEntity(getBaseUrl() + "/users" + "?skip=" + SKIP + "&limit=" + LIMIT, request, String.class);
         });
 
         Then("^I receive a http-status of (\\d+)$", (Integer httpStatus) -> {
@@ -57,6 +59,10 @@ public class UserStepDefinitions extends BaseStepDefinitions implements En {
             JSONObject jsonObject = new JSONObject(response.getBody());
             String token = jsonObject.getString("token");
             Assertions.assertTrue(token.startsWith("ey"));
+        });
+        And("^Get a non-null UserDTO object$", () -> {
+            dto = mapper.readValue(new File(response.getBody()), UserDTO.class);
+            Assertions.assertNotNull(dto);
         });
 
     }

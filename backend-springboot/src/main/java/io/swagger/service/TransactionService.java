@@ -3,12 +3,14 @@ package io.swagger.service;
 import io.swagger.model.entity.Account;
 import io.swagger.model.entity.Transaction;
 import io.swagger.model.entity.User;
+import io.swagger.model.enumeration.TransactionType;
 import io.swagger.repo.AccountRepo;
 import io.swagger.repo.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -16,6 +18,8 @@ import java.util.UUID;
 
 @Service
 public class TransactionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
     @Autowired
     TransactionRepo transactionRepo;
@@ -28,166 +32,111 @@ public class TransactionService {
     @Autowired
     UserService userService;
 
-
     public Transaction createTransaction(Transaction trans) {
+        Account accountFrom = getAccountByIban(trans.getFrom().getIban());
+        Account accountTo = getAccountByIban(trans.getTo());
 
-        var accountFrom = accountService.findAccountByIban(trans.getFrom().getIban()).get();
-        var accountBy = accountService.findAccountByIban(trans.getTo()).get();
-
-        if (transactionValidatorService.checkCurrentOrSavings(accountFrom, accountBy)) {
-            checkGeneralConditions(trans);
+        if (transactionValidatorService.areBothAccountsSavings(accountFrom, accountTo)) {
+            throw new IllegalArgumentException("Cannot create transaction; Cannot transfer between two savings accounts.");
         }
 
-        updateFromBalance(trans);
-        updateToBalance(trans);
+        if (transactionValidatorService.isOneAccountSavings(accountFrom, accountTo)) {
+            if (!transactionValidatorService.isUserOwnerOfAccounts(accountFrom, accountTo)) {
+                throw new IllegalArgumentException("Cannot create transaction; Cannot transfer to or from a savings account that does not belong to you.");
+            }
+        }
+
+        checkGeneralConditions(trans);
+        updateFromBalance(accountFrom, trans.getAmount());
+        updateToBalance(accountTo, trans.getAmount());
 
         return transactionRepo.save(trans);
     }
 
     private void checkGeneralConditions(Transaction trans) {
+        String fromIban = trans.getFrom().getIban();
+        String toIban = trans.getTo();
 
-        if (!transactionValidatorService.checkNotSameAccount(trans.getFrom().getIban(), trans.getTo())) {
-
+        if (!transactionValidatorService.isDifferentAccount(fromIban, toIban)) {
             throw new IllegalArgumentException("Cannot create transaction; cannot transfer between two accounts that are the same.");
+        }
 
-        } else {
+        if (!transactionValidatorService.areAccountsActive(fromIban, toIban)) {
+            throw new IllegalArgumentException("Cannot create transaction; at least one of the accounts is inactive.");
+        }
 
-            if (!transactionValidatorService.checkActive(trans.getFrom().getIban(), trans.getTo())) {
+        if (trans.getAmount() <= 0) {
+            throw new IllegalArgumentException("Cannot create transaction; Amount must be greater than 0.");
+        }
 
-                throw new IllegalArgumentException("Cannot create transaction; at least one of the accounts is inactive.");
+        Optional<Account> accountFrom = accountService.findAccountByIban(fromIban);
+        if (!transactionValidatorService.hasSufficientFunds(accountFrom, trans.getAmount())) {
+            throw new IllegalArgumentException("Cannot create transaction; Cannot exceed absolute limit.");
+        }
 
-            } else {
-
-                if (trans.getAmount() <= 0) {
-
-                    throw new IllegalArgumentException("Cannot create transaction; Amount must be greater than 0.");
-
-                } else {
-
-                    Optional account = accountService.findAccountByIban(trans.getFrom().getIban());
-
-                    if (!transactionValidatorService.checkAbsLimit(account, trans.getAmount())) {
-
-                        throw new IllegalArgumentException("Cannot create transaction; Cannot exceed absolute limit " + "().");
-
-                    } else {
-
-                        User userPerforming = userService.findById(trans.getUserPerforming());
-
-                        if (!transactionValidatorService.checkDayLimit(userPerforming, trans)) {
-
-                            throw new IllegalArgumentException("Cannot create transaction; Cannot exceed day limit " + "(" + userPerforming.getDayLimit() + ").");
-
-                        }
-                    }
-                }
-            }
+        User userPerforming = userService.findById(trans.getUserPerforming());
+        if (!transactionValidatorService.doesNotExceedDayLimit(userPerforming, trans)) {
+            throw new IllegalArgumentException("Cannot create transaction; Cannot exceed day limit.");
         }
     }
 
-
-    private void updateToBalance(Transaction trans) {
-        Optional<Account> optionalAccount = accountService.findAccountByIban(trans.getTo());
-
-        if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
-            account.setBalance(account.getBalance() + trans.getAmount());
-            accountRepo.save(account);
-        } else {
-            throw new NoSuchElementException("Account with the given IBAN not found.");
-        }
+    private void updateToBalance(Account account, double amount) {
+        account.setBalance(account.getBalance() + amount);
+        accountRepo.save(account);
     }
 
-    private void updateFromBalance(Transaction trans) {
-        Optional<Account> optionalAccount = accountService.findAccountByIban(trans.getFrom().getIban());
-
-        if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
-            account.setBalance(account.getBalance() - trans.getAmount());
-            accountRepo.save(account);
-        } else {
-            throw new NoSuchElementException("Account with the given IBAN not found.");
-        }
+    private void updateFromBalance(Account account, double amount) {
+        account.setBalance(account.getBalance() - amount);
+        accountRepo.save(account);
     }
 
     public Transaction createWithdrawal(Transaction trans) {
-        checkPinCode(trans);
+        validatePinCode(trans);
         checkGeneralConditions(trans);
-
-        updateFromBalance(trans);
-
+        Account accountFrom = getAccountByIban(trans.getFrom().getIban());
+        updateFromBalance(accountFrom, trans.getAmount());
         return transactionRepo.save(trans);
     }
 
     public Transaction createDeposit(Transaction trans) {
-        Integer pinCode = trans.getPinCode();
-
-        if (pinCode == null) {
-            throw new IllegalArgumentException("Deposit failed; no pin code entered");
-        }
-
-        Optional<Account> optionalAccount = accountService.findAccountByIban(trans.getTo());
-
-        if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
-
-            if (!pinCode.equals(account.getPinCode())) {
-                throw new IllegalArgumentException("Deposit failed; wrong pin code entered");
-            }
-
-            updateToBalance(trans);
-
-            return transactionRepo.save(trans);
-        } else {
-            throw new NoSuchElementException("Account with the given IBAN not found.");
-        }
+        validatePinCode(trans);
+        Account accountTo = getAccountByIban(trans.getTo());
+        updateToBalance(accountTo, trans.getAmount());
+        return transactionRepo.save(trans);
     }
-
 
     public Transaction findTransactionById(UUID id) {
-        return transactionRepo.findTransactionById(id);
+        return transactionRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Transaction with the given ID not found."));
     }
 
-
-
-
-    public void deleteTransaction(UUID id) {
-        transactionRepo.delete(findTransactionById(id));
-    }
-
-
-
-
-    public Transaction updateTransaction(Transaction transaction) {
-        return transactionRepo.save(transaction);
-    }
-
-    public List<Transaction> getTransactionsFromToday(LocalDate timeStamp) {
-        return transactionRepo.findAllByTimestamp(timeStamp);
+    public List<Transaction> findTransactionsByUserId(UUID userId) {
+        return transactionRepo.findByUserPerforming(userId);
     }
 
     private boolean isPinCodeNull(Integer pinCode) {
-        // Check if pin code is filled in
         return pinCode == null;
     }
 
-    private boolean isPinCodeCorrect(Transaction trans) {
-        Optional<Account> optionalAccount = accountService.findAccountByIban(trans.getFrom().getIban());
+    private boolean isFromPinCodeCorrect(Transaction trans) {
+        Account account = getAccountByIban(trans.getFrom().getIban());
+        return trans.getPinCode().equals(account.getPinCode());
+    }
 
-        if (optionalAccount.isPresent()) {
-            Account account = optionalAccount.get();
-            return trans.getPinCode().equals(account.getPinCode());
-        } else {
-            throw new NoSuchElementException("Account with the given IBAN not found.");
+    private boolean isToPinCodeCorrect(Transaction trans) {
+        Account account = getAccountByIban(trans.getTo());
+        return trans.getPinCode().equals(account.getPinCode());
+    }
+
+    private void validatePinCode(Transaction trans) {
+        if (isPinCodeNull(trans.getPinCode())) {
+            throw new IllegalArgumentException("Operation failed; no pin code entered");
+        }
+        if (!isFromPinCodeCorrect(trans) && !isToPinCodeCorrect(trans)) {
+            throw new IllegalArgumentException("Operation failed; wrong pin code entered");
         }
     }
 
-    private void checkPinCode(Transaction trans) {
-        if (isPinCodeNull(trans.getPinCode())) {
-            throw new IllegalArgumentException("Withdrawal failed; no pin code entered");
-        }
-        if (!isPinCodeCorrect(trans)) {
-            throw new IllegalArgumentException("Withdrawal failed; wrong pin code entered");
-        }
+    private Account getAccountByIban(String iban) {
+        return accountService.findAccountByIban(iban).orElseThrow(() -> new NoSuchElementException("Account with the given IBAN not found."));
     }
 }

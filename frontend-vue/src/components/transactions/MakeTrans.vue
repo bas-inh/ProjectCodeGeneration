@@ -175,11 +175,18 @@ export default {
     makeTransAxios() {
       const today = new Date();
       const date =
-        today.getFullYear() +
-        "-" +
-        ("0" + (today.getMonth() + 1)).slice(-2) +
-        "-" +
-        ("0" + (today.getDate() + 1)).slice(-2);
+          today.getFullYear() +
+          "-" +
+          ("0" + (today.getMonth() + 1)).slice(-2) +
+          "-" +
+          ("0" + today.getDate()).slice(-2) +
+          "T" +
+          ("0" + today.getHours()).slice(-2) +
+          ":" +
+          ("0" + today.getMinutes()).slice(-2) +
+          ":" +
+          ("0" + today.getSeconds()).slice(-2);
+
       const data = JSON.stringify({
         transactionType: "regular",
         timestamp: date,
@@ -189,6 +196,7 @@ export default {
         to: this.toIban,
         pincode: null,
       });
+
       let config = {
         headers: {
           Accept: "application/json",
@@ -196,16 +204,17 @@ export default {
           Authorization: `Bearer ${this.token}`,
         },
       };
+
       axios
-        .post("transactions", data, config)
-        .then((response) => {
-          console.log(response);
-          this.$router.replace("/accounts");
-        })
-        .catch((error) => {
-          this.errorMsg = error.response.data.reason;
-          console.log(error);
-        });
+          .post("transactions", data, config)
+          .then((response) => {
+            console.log(response);
+            this.$router.replace("/accounts");
+          })
+          .catch((error) => {
+            this.errorMsg = error.response.data.reason;
+            console.log(error);
+          });
     },
     onChange(event) {
       axios

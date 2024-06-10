@@ -4,10 +4,12 @@ import io.swagger.model.entity.Account;
 import io.swagger.model.entity.Transaction;
 import io.swagger.model.entity.User;
 import io.swagger.model.enumeration.AccountType;
+import io.swagger.repo.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -18,105 +20,47 @@ public class TransactionValidatorService {
     private TransactionService transactionService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private TransactionRepo transactionRepo;
 
-
-
-
-
-    // Method to check if it is current or savings account
-
-    public boolean checkCurrentOrSavings(Account accountFrom, Account accountTo) {
-        return isAccountSavings(accountFrom, accountTo);
+    public boolean areBothAccountsSavings(Account from, Account to) {
+        return from.getAccountType().equals(AccountType.SAVINGS) && to.getAccountType().equals(AccountType.SAVINGS);
     }
 
-    private boolean isAccountSavings(Account from, Account to) {
+    public boolean isOneAccountSavings(Account from, Account to) {
         return from.getAccountType().equals(AccountType.SAVINGS) || to.getAccountType().equals(AccountType.SAVINGS);
     }
 
-
-
-
-
-    // Method to check if the user is the owner of the account
-
-    public boolean isUserOwner(Account from, Account to) {
-        return isUserOwnerOfAccount(from, to);
-    }
-
-    private boolean isUserOwnerOfAccount(Account from, Account to) {
+    public boolean isUserOwnerOfAccounts(Account from, Account to) {
         return from.getUser().getId().equals(to.getUser().getId());
     }
 
-
-
-
-
-
-    // Method to check if the from account is not the same as to account
-
-    public boolean checkNotSameAccount(String accountFrom, String accountTo) {
-        return isFromSameAsTo(accountFrom, accountTo);
-    }
-    private boolean isFromSameAsTo(String from, String to) {
-        return !from.equals(to);
+    public boolean isDifferentAccount(String accountFrom, String accountTo) {
+        return !accountFrom.equals(accountTo);
     }
 
-
-
-
-
-
-    // Method to check if there is sufficient funds (absolute limit)
-
-    public boolean checkAbsLimit(Optional<Account> optionalAccountFrom, double amount) {
+    public boolean hasSufficientFunds(Optional<Account> optionalAccountFrom, double amount) {
         Account accountFrom = optionalAccountFrom.orElseThrow(() -> new NoSuchElementException("Account not found."));
+        return (accountFrom.getBalance() - amount) >= accountFrom.getAbsLimit();
+    }
 
-        return isAbsoluteLimitExceeded(accountFrom.getBalance(), amount, accountFrom.getAbsLimit());
+    public boolean doesNotExceedDayLimit(User user, Transaction transaction) {
+        double dailyLimit = user.getDayLimit();
+        LocalDateTime today = LocalDateTime.now();
+
+        double totalAmountToday = transactionRepo.findAllByUserPerformingAndTimestamp(user.getId(), today)
+                .stream()
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+
+        return (totalAmountToday + transaction.getAmount()) <= dailyLimit;
     }
 
 
-    private boolean isAbsoluteLimitExceeded(double balance, double amount, double absLimit) {
-        return (balance - amount) > absLimit;
-    }
-
-
-
-
-
-
-    // Method to check if it does not override day limit
-
-    public boolean checkDayLimit(User user, Transaction trans) {
-        return isDayLimitExceeded(user.getDayLimit(), trans);
-    }
-
-    private boolean isDayLimitExceeded(Double dayLimit, Transaction trans) {
-        List<Transaction> transToday = transactionService.getTransactionsFromToday(LocalDate.now());
-        double total = 0;
-        for (Transaction transaction : transToday) {
-            total += transaction.getAmount();
-        }
-
-        // Add the amount of the new transaction to the total
-        total += trans.getAmount();
-        return total <= dayLimit;
-    }
-
-
-
-
-
-
-    // Method to check if both accounts are active
-
-    public boolean checkActive(String ibanFrom, String ibanTo) {
-        return areAccountsActive(accountService.findAccountByIban(ibanFrom).get(), accountService.findAccountByIban(ibanTo).get());
-    }
-
-    private boolean areAccountsActive(Account from, Account to) {
+    public boolean areAccountsActive(String ibanFrom, String ibanTo) {
+        Account from = accountService.findAccountByIban(ibanFrom).orElseThrow(() -> new NoSuchElementException("From account not found."));
+        Account to = accountService.findAccountByIban(ibanTo).orElseThrow(() -> new NoSuchElementException("To account not found."));
         return from.getActive() && to.getActive();
     }
 
-
 }
-

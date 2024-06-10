@@ -44,6 +44,7 @@ public class CustomApplicationRunner implements ApplicationRunner {
         bankAccount.setBalance(max);
         bankAccount.setIban("NL01INHO0000000001");
         bankAccount.setAccountType(AccountType.CURRENT);
+        bankAccount.setActive(true);
 
 
         //init wim and his account
@@ -53,7 +54,7 @@ public class CustomApplicationRunner implements ApplicationRunner {
         wim.setPassword("welkom");
         wim.setEmail("wim@wim.nl");
         wim.setPhone("+316 512345678");
-        wim.setDayLimit(0.00);
+        wim.setDayLimit(1000.00);
         wim.setUserTypes(List.of(UserType.ROLE_CUSTOMER));
 
         Account wimsAccount = new Account();
@@ -72,7 +73,7 @@ public class CustomApplicationRunner implements ApplicationRunner {
         frank.setPassword("welkom");
         frank.setEmail("frank@frank.nl");
         frank.setPhone("+316 112345678");
-        frank.setDayLimit(0.00);
+        frank.setDayLimit(1000.00);
         frank.setUserTypes(List.of(UserType.ROLE_EMPLOYEE));
 
         Account franksAccount = new Account();

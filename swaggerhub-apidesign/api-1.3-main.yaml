@@ -2,7 +2,7 @@ openapi: 3.0.0
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/662781/BankAPI/1.3
+    url: https://virtserver.swaggerhub.com/645147/Bank-Retake/1.3
 info:
   description: This is a Bank API
   version: "1.3"
@@ -365,41 +365,24 @@ paths:
                 $ref: "#/components/schemas/TransactionDTO"
         404:
           description: Transaction not found
-    put:
+  /transactions/byUser:
+    get:
       tags:
         - Employee
         - Customer
-      summary: Updates a scheduled transaction
-      operationId: updateTransaction
-      description: |
-        By sending this request, an employee or customer can update a scheduled transaction
-      requestBody:
-        description: Updated transaction object
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TransactionDTO"
+      summary: Get all transactions by logged-in user
+      operationId: getTransactionsByUser
       responses:
         200:
-          description: Transaction found and updated
+          description: Transactions found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TransactionDTO"
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionDTO"
         404:
-          description: Transaction not found
-    delete:
-      tags:
-        - Employee
-        - Customer
-      summary: Delete a scheduled transaction
-      operationId: deleteTransaction
-      responses:
-        204:
-          description: Scheduled transaction deleted
-        404:
-          description: Transaction not found
+          description: No transactions found
 components:
   securitySchemes:
     bearerAuth:

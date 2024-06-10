@@ -16,6 +16,7 @@ import AddAccount from './components/accounts/AddAccount.vue';
 import Deposit from './components/transactions/Deposit.vue';
 import Withdraw from './components/transactions/Withdraw.vue';
 import MakeTrans from './components/transactions/MakeTrans.vue';
+import Transactions from "@/components/transactions/Transactions.vue";
 
 
 
@@ -35,6 +36,7 @@ const routes = [
     { path: '/deposit', component: Deposit },
     { path: '/withdraw', component: Withdraw },
     { path: '/transaction', component: MakeTrans },
+    { path: '/transactions', component: Transactions },
 
 
 ];

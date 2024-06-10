@@ -1,5 +1,6 @@
 package io.swagger.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.model.enumeration.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -18,15 +20,16 @@ import java.util.UUID;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2022-06-09T17:51:22.954Z[GMT]")
 
 
-public class TransactionDTO   {
+public class TransactionDTO {
   @JsonProperty("id")
   private UUID id = null;
 
   @JsonProperty("transactionType")
   private TransactionType transactionType = null;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   @JsonProperty("timestamp")
-  private LocalDate timestamp = null;
+  private LocalDateTime timestamp = null;
 
   @JsonProperty("from")
   private String from = null;
@@ -83,7 +86,7 @@ public class TransactionDTO   {
     this.transactionType = transactionType;
   }
 
-  public TransactionDTO timestamp(LocalDate timestamp) {
+  public TransactionDTO timestamp(LocalDateTime timestamp) {
     this.timestamp = timestamp;
     return this;
   }
@@ -95,11 +98,11 @@ public class TransactionDTO   {
   @Schema(description = "")
 
   @Valid
-  public LocalDate getTimestamp() {
+  public LocalDateTime getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(LocalDate timestamp) {
+  public void setTimestamp(LocalDateTime timestamp) {
     this.timestamp = timestamp;
   }
 

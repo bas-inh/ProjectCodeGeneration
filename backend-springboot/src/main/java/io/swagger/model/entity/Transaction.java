@@ -1,12 +1,11 @@
 package io.swagger.model.entity;
 
-import io.swagger.model.enumeration.AccountType;
 import io.swagger.model.enumeration.TransactionType;
 import lombok.Data;
 import lombok.ToString;
-import java.time.LocalDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -17,9 +16,10 @@ public class Transaction {
     @GeneratedValue
     private UUID id;
 
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
 
     private TransactionType transactionType;
+
 
     @ToString.Exclude
     @ManyToOne(cascade = CascadeType.ALL)
